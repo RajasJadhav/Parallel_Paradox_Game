@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float speed = 10f;
     [SerializeField] private float jumpForce = 5f;
-    private bool isOnGround;
+    public bool isOnGround;
 
 
     private void Start()
@@ -18,9 +18,13 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        RotatePlayer();
+    }
+
+    private void FixedUpdate()
+    {
         Move();
         Jump();
-        RotatePlayer();
     }
 
     private void Move()

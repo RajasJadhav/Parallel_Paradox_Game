@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 143721310}
   - component: {fileID: 143721314}
   - component: {fileID: 143721315}
+  - component: {fileID: 143721316}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -250,6 +251,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 25
   jumpForce: 5
+  isOnGround: 0
 --- !u!54 &143721315
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -277,6 +279,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &143721316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143721309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cc95dc420097b24cace89ea0b4bbe07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TimelineRecorder
+  maxRecordingTime: 30
+  isRecording: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

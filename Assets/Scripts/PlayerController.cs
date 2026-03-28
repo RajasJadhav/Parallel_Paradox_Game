@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         Jump();
+        RotatePlayer();
     }
 
     private void Move()
@@ -27,9 +28,10 @@ public class PlayerController : MonoBehaviour
         float forward = Input.GetAxis("Vertical");
         float horizontal = Input.GetAxis("Horizontal");
 
-        playerRb.AddForce(Vector3.forward * forward * speed , ForceMode.Force);
-        playerRb.AddForce(Vector3.right * horizontal * speed, ForceMode.Force);
-    }
+        Vector3 moveDir = transform.forward * forward + transform.right * horizontal;
+
+        playerRb.AddForce(moveDir * speed, ForceMode.Force);
+    } 
 
     private void Jump()
     {
@@ -38,6 +40,12 @@ public class PlayerController : MonoBehaviour
               playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
               isOnGround = false;
          }
+    }
+
+    private void RotatePlayer()
+    {
+        float mouseX = Input.GetAxis("Mouse X") * 200f * Time.deltaTime;
+        transform.Rotate(Vector3.up * mouseX);
     }
 
     private void OnCollisionEnter(Collision collision)

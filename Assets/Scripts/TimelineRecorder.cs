@@ -61,7 +61,7 @@ public class TimelineRecorder : MonoBehaviour
     {
         // Read what the player is doing RIGHT NOW
         bool moving = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
-        bool jumping = !playerController.isOnGround;
+        bool jumping = !playerController.IsGrounded();
 
         // Build a FrameData and store it
         FrameData frame = new FrameData(

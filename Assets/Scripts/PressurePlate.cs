@@ -101,4 +101,10 @@ public class PressurePlate : MonoBehaviour, IResettable
 
         Debug.Log($"PressurePlate [{gameObject.name}]: Reset.");
     }
+
+    // Add this method to PressurePlate.cs
+    public bool IsActive()
+    {
+        return isActive;
+    }
 }

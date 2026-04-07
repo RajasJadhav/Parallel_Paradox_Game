@@ -57,23 +57,19 @@ public class LevelManager : MonoBehaviour
     {
         loopActive = true;
 
-        // Move player back to spawn
+        // Reset player position
         playerRecorder.transform.position = spawnPoint.position;
         playerRecorder.transform.rotation = spawnPoint.rotation;
 
-        // Start recording the player
-        playerRecorder.StartRecording();
+        // ❌ Don't call playerRecorder.StartRecording() here anymore
+        // ✅ Player will press R when they're ready
 
-        // Start ALL existing ghosts replaying from the beginning
         foreach (GhostReplay ghost in activeGhosts)
-        {
             ghost.StartReplay();
-        }
 
-        // Tell the HUD a new loop started
         OnLoopStarted?.Invoke(loopNumber);
 
-        Debug.Log($"LevelManager: Loop {loopNumber} started. {activeGhosts.Count} ghosts active.");
+        Debug.Log($"LevelManager: Loop {loopNumber} ready. Press R to start recording.");
     }
 
     public void EndLoop()

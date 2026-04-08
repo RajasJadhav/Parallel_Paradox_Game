@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8801156115486528913}
   - component: {fileID: 458256500631088838}
   - component: {fileID: 7314355133001459265}
-  - component: {fileID: 33572863905217494}
+  - component: {fileID: -826269795111257323}
   m_Layer: 0
   m_Name: Ghost
   m_TagString: Ghost
@@ -129,10 +129,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostReplay
   ghostAlpha: 0.4
+  replayOffset: {x: 0, y: 0, z: 0}
   ghostRenderer: {fileID: 8801156115486528913}
   isReplaying: 0
   isFinished: 0
---- !u!54 &33572863905217494
+--- !u!54 &-826269795111257323
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,5 +158,5 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 0
   m_CollisionDetection: 0

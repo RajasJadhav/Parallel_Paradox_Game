@@ -47,8 +47,17 @@ public class TimelineRecorder : MonoBehaviour
         bool moving = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
         bool jumping = !playerController.IsGrounded();
 
+        // Get the bottom of the capsule (feet position) instead of center
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
+        Vector3 feetPosition = transform.position;
+        if (col != null)
+        {
+            // Subtract the capsule's center offset to get true feet position
+            feetPosition = transform.position - new Vector3(0, col.height / 2f - col.radius, 0);
+        }
+
         FrameData frame = new FrameData(
-            transform.position,
+            feetPosition,        // ← Record feet, not center
             transform.rotation,
             moving,
             jumping,

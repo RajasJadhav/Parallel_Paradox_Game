@@ -44,20 +44,15 @@ public class TimelineRecorder : MonoBehaviour
 
     void CaptureFrame()
     {
-        bool moving = Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
+        bool moving = Input.GetAxis("Horizontal") != 0
+                    || Input.GetAxis("Vertical") != 0;
         bool jumping = !playerController.IsGrounded();
 
-        // Get the bottom of the capsule (feet position) instead of center
-        CapsuleCollider col = GetComponent<CapsuleCollider>();
-        Vector3 feetPosition = transform.position;
-        if (col != null)
-        {
-            // Subtract the capsule's center offset to get true feet position
-            feetPosition = transform.position - new Vector3(0, col.height / 2f - col.radius, 0);
-        }
-
+        // Record the EXACT transform.position — no offset math
+        // transform.position on a capsule IS the center
+        // Ghost will replay to the same center → no float
         FrameData frame = new FrameData(
-            feetPosition,        // ← Record feet, not center
+            transform.position,   // ← center, exactly as Unity stores it
             transform.rotation,
             moving,
             jumping,

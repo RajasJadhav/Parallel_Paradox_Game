@@ -7,9 +7,6 @@ public class GhostReplay : MonoBehaviour
     [Header("Replay Settings")]
     public float ghostAlpha = 0.4f;
 
-    [Header("Offset - Tweak if ghost floats or clips into floor")]
-    public Vector3 replayOffset = new Vector3(0, 0, 0);
-
     [Header("References")]
     public Renderer ghostRenderer;
 
@@ -69,15 +66,10 @@ public class GhostReplay : MonoBehaviour
 
     void ApplyFrame(FrameData frame)
     {
-        CapsuleCollider col = GetComponent<CapsuleCollider>();
-        Vector3 ghostPosition = frame.position;
-        if (col != null)
-        {
-            // Add back the capsule offset so ghost stands correctly
-            ghostPosition = frame.position + new Vector3(0, col.height / 2f - col.radius, 0);
-        }
-
-        transform.position = ghostPosition;
+        // Apply center position directly — no offset calculation
+        // The ghost capsule has the same dimensions as the player capsule
+        // So the same center Y = same visual height on the ground
+        transform.position = frame.position;
         transform.rotation = frame.rotation;
     }
 
@@ -116,14 +108,11 @@ public class GhostReplay : MonoBehaviour
         isReplaying = true;
         isFinished = false;
 
-        // ✅ KEY FIX: Show the ghost only when replay actually starts
-        
-
-        // Snap to frame 0 immediately (with offset)
-        transform.position = frames[0].position + replayOffset;
+        // Snap to frame 0 — pure position, no offset
+        transform.position = frames[0].position;
         transform.rotation = frames[0].rotation;
 
-        Debug.Log($"GhostReplay: Replay started. Frame[0] Y = {frames[0].position.y}");
+        Debug.Log($"GhostReplay: Replay started. Frame[0] pos = {frames[0].position}");
     }
 
     public void ResetReplay()
@@ -131,6 +120,8 @@ public class GhostReplay : MonoBehaviour
         currentFrame = 0;
         isReplaying = false;
         isFinished = false;
-        
+
+        Debug.Log("GhostReplay: Reset");
+
     }
 }

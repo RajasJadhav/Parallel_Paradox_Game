@@ -10,28 +10,36 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundLayer;
 
     private Rigidbody rb;
-    private Animator anim; // 1. Reference to the Animator
+    private Animator animator;          // ← ADD
     private bool isGrounded;
     private Vector3 moveDirection;
     private int groundContactCount = 0;
 
+    // Animator parameter hashes (faster than string lookups)
+    private static readonly int SpeedHash = Animator.StringToHash("Speed");
+    private static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        anim = GetComponent<Animator>(); // 2. Initialize Animator
+        animator = GetComponent<Animator>();   // ← ADD
+
         rb.freezeRotation = true;
+
+        if (animator == null)
+            Debug.LogError("PlayerController: No Animator found!");
+
         Debug.Log("PlayerController: Ready.");
     }
 
     void Update()
     {
         HandleInput();
-        UpdateAnimations(); // 3. Call the animation update loop
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
             Jump();
-        }
+
+        UpdateAnimator();   // ← ADD
     }
 
     void FixedUpdate()
@@ -46,20 +54,6 @@ public class PlayerController : MonoBehaviour
         moveDirection = transform.right * horizontal + transform.forward * vertical;
     }
 
-    // 4. New method to send data to the Animator Controller
-    void UpdateAnimations()
-    {
-        // Update the 'IsGrounded' boolean parameter seen in your screenshot
-        anim.SetBool("IsGrounded", isGrounded);
-
-        // Calculate horizontal speed (ignoring vertical velocity)
-        float horizontalSpeed = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude;
-
-        // Use 'Speed' parameter to transition from Idle to Walking
-        // (Assuming you have or will add a 'Speed' float parameter)
-        anim.SetFloat("Speed", horizontalSpeed);
-    }
-
     void MovePlayer()
     {
         Vector3 velocity = moveDirection * moveSpeed;
@@ -67,16 +61,32 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = velocity;
     }
 
+    // ── Animator ──────────────────────────────────────────────────
+
+    void UpdateAnimator()
+    {
+        if (animator == null) return;
+
+        // Speed: magnitude of the horizontal input direction (0–1)
+        float speed = new Vector2(
+            Input.GetAxis("Horizontal"),
+            Input.GetAxis("Vertical")
+        ).magnitude;
+
+        animator.SetFloat(SpeedHash, speed);
+        animator.SetBool(IsGroundedHash, isGrounded);
+    }
+
+    // ── Jump ──────────────────────────────────────────────────────
+
     void Jump()
     {
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-
-        // Optional: Trigger a jump animation if you have a "Jump" trigger
-        // anim.SetTrigger("Jump");
-
         Debug.Log("Jumped!");
     }
+
+    // ── Collision-based ground detection ──────────────────────────
 
     void OnCollisionEnter(Collision collision)
     {

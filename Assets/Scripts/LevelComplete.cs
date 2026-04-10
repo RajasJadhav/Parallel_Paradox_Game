@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // Place a trigger zone at the level exit
 // When the player walks through, the level is marked complete
@@ -27,6 +28,8 @@ public class LevelComplete : MonoBehaviour
             Debug.Log($"LevelComplete: Player reached the exit! Loading {nextSceneName}.");
 
             levelManager?.LevelComplete();
+
+            SceneManager.LoadScene(nextSceneName); // ← Replace the TODO with this
 
             // TODO: Uncomment when SceneLoader is ready
             // SceneLoader.Instance.LoadScene(nextSceneName);

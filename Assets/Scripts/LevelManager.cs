@@ -95,37 +95,46 @@ public class LevelManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(slowMoDuration);
         Time.timeScale = 1f;
 
-        // Step 2: Spawn a new ghost using what the player just recorded
+        // Step 2: Spawn ghost BEFORE StartLoop so it's in activeGhosts
         SpawnGhost();
 
-        // Step 3: Reset all puzzle objects (doors, buttons back to initial state)
+        // Step 3: Reset all puzzle objects
         ResetLevelObjects();
 
-        // Step 4: Start the next loop
+        // Step 4: Start the next loop (this calls StartReplay on ALL ghosts)
         loopNumber++;
         StartLoop();
     }
 
     void SpawnGhost()
     {
-        // Create a new ghost at the spawn point
+        List<FrameData> frames = playerRecorder.GetRecordedFrames();
+
+        if (frames.Count == 0)
+        {
+            Debug.LogWarning("LevelManager: No frames recorded, skipping ghost spawn.");
+            return;
+        }
+
         GameObject newGhostObject = Instantiate(
             ghostPrefab,
             spawnPoint.position,
             spawnPoint.rotation
         );
 
-        // Give the ghost the frames we just recorded
         GhostReplay newGhost = newGhostObject.GetComponent<GhostReplay>();
-        newGhost.SetFrames(playerRecorder.GetRecordedFrames());
 
-        // Add it to our list of all active ghosts
-        activeGhosts.Add(newGhost);
+        if (newGhost == null)
+        {
+            Debug.LogError("LevelManager: GhostReplay component missing on prefab!");
+            return;
+        }
 
-        // Tell the HUD how many ghosts there are now
+        newGhost.SetFrames(frames);
+        activeGhosts.Add(newGhost); // ← Added to list BEFORE StartLoop runs
+
         OnGhostSpawned?.Invoke(activeGhosts.Count);
-
-        Debug.Log($"LevelManager: Ghost {activeGhosts.Count} spawned with {playerRecorder.GetRecordedFrames().Count} frames.");
+        Debug.Log($"LevelManager: Ghost {activeGhosts.Count} spawned with {frames.Count} frames.");
     }
 
     void ResetLevelObjects()

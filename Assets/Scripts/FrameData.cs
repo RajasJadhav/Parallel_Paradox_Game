@@ -12,15 +12,17 @@ public struct FrameData
     public bool isMoving;
     public bool isJumping;
     public bool isPressingSomething;
-    public float speed;           // ← ADD: store actual speed value
+    public float speed;
+    public bool isGrounded;      // ← ADD
 
-    public FrameData(Vector3 pos, Quaternion rot, bool moving, bool jumping, bool pressing, float spd)
+    public FrameData(Vector3 pos, Quaternion rot, bool moving, bool jumping, bool pressing, float spd, bool grounded)
     {
         position = pos;
         rotation = rot;
         isMoving = moving;
         isJumping = jumping;
         isPressingSomething = pressing;
-        speed = spd;              // ← ADD
+        speed = spd;
+        isGrounded = grounded;   // ← ADD
     }
 }

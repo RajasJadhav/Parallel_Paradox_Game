@@ -46,9 +46,10 @@ public class TimelineRecorder : MonoBehaviour
     {
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
-        float speed = new Vector2(h, v).magnitude;   // ← ADD
+        float speed = new Vector2(h, v).magnitude;
+        bool grounded = playerController.IsGrounded();  // ← ADD
         bool moving = speed > 0.1f;
-        bool jumping = !playerController.IsGrounded();
+        bool jumping = !grounded;
 
         FrameData frame = new FrameData(
             transform.position,
@@ -56,7 +57,8 @@ public class TimelineRecorder : MonoBehaviour
             moving,
             jumping,
             false,
-            speed              // ← ADD
+            speed,
+            grounded    // ← ADD
         );
 
         recordedFrames.Add(frame);

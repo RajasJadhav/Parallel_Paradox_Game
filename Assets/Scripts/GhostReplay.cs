@@ -22,16 +22,16 @@ public class GhostReplay : MonoBehaviour
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
     private static readonly int IsGroundedHash = Animator.StringToHash("isGrounded");
 
-    void Start()
+    void Awake()   // ← was Start()
     {
-        rb = GetComponent<Rigidbody>();                     // ← ADD
+        rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.isKinematic = true;                          // ← Force kinematic at runtime too
+            rb.isKinematic = true;
             rb.useGravity = false;
         }
 
-        animator = GetComponent<Animator>();                // ← ADD
+        animator = GetComponent<Animator>();
         if (animator == null)
             Debug.LogWarning("GhostReplay: No Animator found!");
 
@@ -48,7 +48,7 @@ public class GhostReplay : MonoBehaviour
             Debug.LogWarning("GhostReplay: No Renderer assigned!");
         }
 
-        gameObject.SetActive(false);                        // ← Hide until replay starts
+        gameObject.SetActive(false); // Now runs immediately during Instantiate, BEFORE SetFrames
         Debug.Log("GhostReplay: Ready.");
     }
 
@@ -65,8 +65,14 @@ public class GhostReplay : MonoBehaviour
         {
             isReplaying = false;
             isFinished = true;
+
+            // ← Force animator to idle state when replay ends
             if (animator != null)
-                animator.SetFloat(SpeedHash, 0f);           // ← Stop animation when done
+            {
+                animator.SetFloat(SpeedHash, 0f);
+                animator.SetBool(IsGroundedHash, true);  // ← grounded = true stops jump anim
+            }
+
             Debug.Log($"GhostReplay: Replay finished at frame {currentFrame}.");
         }
     }
@@ -76,11 +82,15 @@ public class GhostReplay : MonoBehaviour
         transform.position = frame.position;
         transform.rotation = frame.rotation;
 
-        // Drive the ghost's animator from recorded data      ← ADD block
         if (animator != null)
         {
             animator.SetFloat(SpeedHash, frame.speed);
-            animator.SetBool(IsGroundedHash, !frame.isJumping);
+
+            // Only set bool if parameter exists
+            foreach (AnimatorControllerParameter p in animator.parameters)
+            {
+                Debug.Log($"Ghost Animator param: '{p.name}' hash={p.nameHash}");
+            }
         }
     }
 
@@ -117,11 +127,18 @@ public class GhostReplay : MonoBehaviour
             return;
         }
 
-        gameObject.SetActive(true);                         // ← Show ghost when replay starts
         currentFrame = 0;
         isReplaying = true;
         isFinished = false;
 
+        // Reset animator to neutral before replay begins
+        if (animator != null)
+        {
+            animator.SetFloat(SpeedHash, 0f);
+            animator.SetBool(IsGroundedHash, true);  // ← ADD
+        }
+
+        gameObject.SetActive(true);
         transform.position = frames[0].position;
         transform.rotation = frames[0].rotation;
 

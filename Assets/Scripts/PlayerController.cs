@@ -90,10 +90,13 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        Debug.Log($"Collision with: {collision.gameObject.name} | Layer: {collision.gameObject.layer} | GroundMask: {groundLayer.value}");
+
         if (IsGroundLayer(collision))
         {
             groundContactCount++;
             isGrounded = true;
+            Debug.Log("IsGrounded = TRUE");
         }
     }
 

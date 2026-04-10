@@ -1,14 +1,18 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class TimelineRecorder : MonoBehaviour
 {
     [HideInInspector] public bool isRecording = false;
 
-    private List<FrameData> recordedFrames = new List<FrameData>();
+    // ── NEW — tracks if C was pressed this fixed frame ───────────
+    private bool stampPressedThisFrame = false;
+    // ─────────────────────────────────────────────────────────────
+
+    private List<FrameData>  recordedFrames   = new List<FrameData>();
     private PlayerController playerController;
 
-    public System.Action OnRecordingTimedOut; // Still used — fires when R is pressed to stop
+    public System.Action OnRecordingTimedOut;
 
     void Start()
     {
@@ -17,22 +21,32 @@ public class TimelineRecorder : MonoBehaviour
         if (playerController == null)
             Debug.LogError("TimelineRecorder: No PlayerController found!");
 
-        Debug.Log("TimelineRecorder: Ready. Press R to start recording.");
+        Debug.Log("TimelineRecorder: Ready. Press R to record. Press C to stamp position.");
     }
 
     void Update()
     {
+        // ── R key — start / stop recording ───────────────────────
         if (Input.GetKeyDown(KeyCode.R))
         {
             if (!isRecording)
-            {
                 StartRecording();
-            }
             else
             {
                 StopRecording();
-                OnRecordingTimedOut?.Invoke(); // Tells LevelManager to end the loop + spawn ghost
+                OnRecordingTimedOut?.Invoke();
             }
+        }
+
+        // ── C key — stamp current position during recording ───────
+        // Read in Update so no keypresses are missed
+        // The flag is consumed in the next FixedUpdate frame
+        if (isRecording && Input.GetKeyDown(KeyCode.C))
+        {
+            stampPressedThisFrame = true;
+
+            Debug.Log($"TimelineRecorder: Stamp marked at {transform.position}. " +
+                      $"Will appear as frozen clone on next loop.");
         }
     }
 
@@ -44,34 +58,43 @@ public class TimelineRecorder : MonoBehaviour
 
     void CaptureFrame()
     {
-        bool moving = Input.GetAxis("Horizontal") != 0
-                    || Input.GetAxis("Vertical") != 0;
+        bool moving  = Input.GetAxis("Horizontal") != 0
+                    || Input.GetAxis("Vertical")   != 0;
         bool jumping = !playerController.IsGrounded();
 
-        // Record the EXACT transform.position — no offset math
-        // transform.position on a capsule IS the center
-        // Ghost will replay to the same center → no float
+        // ── Pass stamp flag into this frame ───────────────────────
         FrameData frame = new FrameData(
-            transform.position,   // ← center, exactly as Unity stores it
+            transform.position,
             transform.rotation,
             moving,
             jumping,
-            false
+            false,
+            stampPressedThisFrame  // ← NEW: marks this as a stamp frame
         );
 
         recordedFrames.Add(frame);
+
+        // ── Consume the stamp flag after one frame ────────────────
+        // Only one frame gets marked per C press
+        if (stampPressedThisFrame)
+            stampPressedThisFrame = false;
     }
 
     public void StartRecording()
     {
         recordedFrames.Clear();
         isRecording = true;
-        Debug.Log("TimelineRecorder: Recording started.");
+        stampPressedThisFrame = false;
+
+        Debug.Log("TimelineRecorder: Recording started. " +
+                  "Walk around. Press C to stamp positions.");
     }
 
     public void StopRecording()
     {
-        isRecording = false;
+        isRecording           = false;
+        stampPressedThisFrame = false;
+
         Debug.Log($"TimelineRecorder: Stopped. {recordedFrames.Count} frames captured.");
     }
 

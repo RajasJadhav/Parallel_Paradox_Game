@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 3789645169550033477}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.113, y: 1, z: -2.573}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -129,10 +129,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostReplay
   ghostAlpha: 0.4
-  replayOffset: {x: 0, y: 0, z: 0}
   ghostRenderer: {fileID: 8801156115486528913}
+  frozenClonePrefab: {fileID: 3789645169550033477}
   isReplaying: 0
   isFinished: 0
+  isFalling: 0
+  fallGravityMultiplier: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!54 &-826269795111257323
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -155,8 +160,8 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 122
   m_CollisionDetection: 0

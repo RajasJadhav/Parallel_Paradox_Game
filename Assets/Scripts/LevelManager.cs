@@ -127,37 +127,47 @@ public class LevelManager : MonoBehaviour
 
         Debug.Log($"LevelManager: Ghost {activeGhosts.Count} spawned with {playerRecorder.GetRecordedFrames().Count} frames.");
     }
+    
+// In LevelManager.cs
+// Find your existing ResetLevelObjects() method
+// Add this at the TOP of that method:
 
-    void ResetLevelObjects()
+void ResetLevelObjects()
+{
+    // ── Frozen clones persist between loops — DO NOT clear here ──
+    // They only clear when the full level resets (scene reload)
+    // This is intentional — stamps accumulate across loops
+
+    // All your existing IResettable reset code stays below:
+    MonoBehaviour[] allObjects = FindObjectsOfType<MonoBehaviour>();
+    foreach (MonoBehaviour obj in allObjects)
     {
-        // Faster, non-sorted version
-        MonoBehaviour[] allObjects =
-            Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
-
-        foreach (MonoBehaviour obj in allObjects)
+        if (obj is IResettable resettable)
         {
-            if (obj is IResettable resettable)
-            {
-                resettable.ResetObject();
-                Debug.Log($"LevelManager: Reset {obj.gameObject.name}");
-            }
+            resettable.ResetObject();
         }
     }
+}
+
+// Add this to LevelComplete() — called when player exits level:
+public void LevelComplete()
+{
+    loopActive = false;
+    playerRecorder.StopRecording();
+
+    // NOW clear frozen clones — full level is done
+    GhostReplay.ClearAllFrozenClones();
+
+    Debug.Log("LevelManager: Level Complete! Frozen clones cleared.");
+}
+
 
     // ── Public Methods ───────────────────────────────────────────
 
     public int GetLoopNumber() { return loopNumber; }
     public int GetGhostCount() { return activeGhosts.Count; }
 
-    public void LevelComplete()
-    {
-        loopActive = false;
-        playerRecorder.StopRecording();
 
-        Debug.Log("LevelManager: Level Complete!");
-        // TODO: Load next level or show completion screen
-        // SceneLoader.Instance.LoadNextLevel();
-    }
 
     void OnDestroy()
     {

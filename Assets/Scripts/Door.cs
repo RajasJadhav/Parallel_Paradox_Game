@@ -8,7 +8,7 @@ public class Door : MonoBehaviour, IResettable
 {
     // ── Inspector Variables ─────────────────────────────────────
     [Header("Movement")]
-    public Vector3 openOffset = new Vector3(0f, 3f, 0f);  // How far door slides when open
+    public Vector3 openOffset = new Vector3(0f, 5.5f, 0f);  // How far door slides when open
     public float moveSpeed = 2f;                         // How fast it opens/closes
 
     [Header("Audio")]

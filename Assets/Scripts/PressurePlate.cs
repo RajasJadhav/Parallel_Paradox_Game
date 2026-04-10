@@ -13,8 +13,7 @@ public class PressurePlate : MonoBehaviour, IResettable
 
     [Header("Visual Feedback")]
     public Renderer plateRenderer;        // The plate's visual mesh
-    public Color activeColor = Color.green;
-    public Color inactiveColor = Color.red;
+    public Color plateColor = new Color(223f / 255f, 192f / 255f, 137f / 255f);
 
     // ── State ────────────────────────────────────────────────────
     private int currentActivators = 0;    // How many are standing on it right now
@@ -87,7 +86,7 @@ public class PressurePlate : MonoBehaviour, IResettable
     void UpdateVisual()
     {
         if (plateRenderer != null)
-            plateRenderer.material.color = isActive ? activeColor : inactiveColor;
+            plateRenderer.material.color = plateColor;
     }
 
     // ── IResettable ───────────────────────────────────────────────

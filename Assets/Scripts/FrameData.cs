@@ -7,25 +7,20 @@ using UnityEngine;
 [System.Serializable]
 public struct FrameData
 {
-    // ── Position & Rotation ─────────────────────────────────────
-    public Vector3 position;       // Where was the player this frame?
-    public Quaternion rotation;       // Which way were they facing?
+    public Vector3 position;
+    public Quaternion rotation;
+    public bool isMoving;
+    public bool isJumping;
+    public bool isPressingSomething;
+    public float speed;           // ← ADD: store actual speed value
 
-    // ── Action Flags ────────────────────────────────────────────
-    // These tell the ghost what the player WAS doing this frame
-    // so the ghost can trigger the same effects (sounds, animations)
-    public bool isMoving;             // Was the player walking?
-    public bool isJumping;            // Were they in the air?
-    public bool isPressingSomething;  // Were they standing on a pressure plate?
-
-    // ── Constructor ─────────────────────────────────────────────
-    // Makes it easy to create a FrameData in one line
-    public FrameData(Vector3 pos, Quaternion rot, bool moving, bool jumping, bool pressing)
+    public FrameData(Vector3 pos, Quaternion rot, bool moving, bool jumping, bool pressing, float spd)
     {
         position = pos;
         rotation = rot;
         isMoving = moving;
         isJumping = jumping;
         isPressingSomething = pressing;
+        speed = spd;              // ← ADD
     }
 }

@@ -3,33 +3,41 @@ using System.Collections.Generic;
 
 public class GhostReplay : MonoBehaviour
 {
-    // ── Inspector Variables ─────────────────────────────────────
     [Header("Replay Settings")]
     public float ghostAlpha = 0.4f;
 
     [Header("References")]
     public Renderer ghostRenderer;
 
-    // ── State ────────────────────────────────────────────────────
     [HideInInspector] public bool isReplaying = false;
     [HideInInspector] public bool isFinished = false;
 
-    // ── Private Data ─────────────────────────────────────────────
     private List<FrameData> frames = new List<FrameData>();
     private int currentFrame = 0;
     private Material ghostMaterial;
+    private Animator animator;                              // ← ADD
+    private Rigidbody rb;                                   // ← ADD
+
+    // Same hashes as PlayerController
+    private static readonly int SpeedHash = Animator.StringToHash("Speed");
+    private static readonly int IsGroundedHash = Animator.StringToHash("isGrounded");
 
     void Start()
     {
-        // Disable collider so ghost never pushes player
-        CapsuleCollider col = GetComponent<CapsuleCollider>();
-        if (col != null)
+        rb = GetComponent<Rigidbody>();                     // ← ADD
+        if (rb != null)
         {
-            col.isTrigger = true;
-            Debug.Log("GhostReplay: Collider set to trigger.");
+            rb.isKinematic = true;                          // ← Force kinematic at runtime too
+            rb.useGravity = false;
         }
 
-        // Setup transparent material
+        animator = GetComponent<Animator>();                // ← ADD
+        if (animator == null)
+            Debug.LogWarning("GhostReplay: No Animator found!");
+
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
+        if (col != null) col.isTrigger = true;
+
         if (ghostRenderer != null)
         {
             ghostMaterial = ghostRenderer.material;
@@ -40,11 +48,8 @@ public class GhostReplay : MonoBehaviour
             Debug.LogWarning("GhostReplay: No Renderer assigned!");
         }
 
-        // ✅ KEY FIX: Hide the ghost at start so it doesn't
-        // appear at the wrong position before replay begins
-        
-
-        Debug.Log("GhostReplay: Ghost ready and waiting for frames.");
+        gameObject.SetActive(false);                        // ← Hide until replay starts
+        Debug.Log("GhostReplay: Ready.");
     }
 
     void FixedUpdate()
@@ -60,18 +65,26 @@ public class GhostReplay : MonoBehaviour
         {
             isReplaying = false;
             isFinished = true;
+            if (animator != null)
+                animator.SetFloat(SpeedHash, 0f);           // ← Stop animation when done
             Debug.Log($"GhostReplay: Replay finished at frame {currentFrame}.");
         }
     }
 
     void ApplyFrame(FrameData frame)
     {
-        // Apply center position directly — no offset calculation
-        // The ghost capsule has the same dimensions as the player capsule
-        // So the same center Y = same visual height on the ground
         transform.position = frame.position;
         transform.rotation = frame.rotation;
+
+        // Drive the ghost's animator from recorded data      ← ADD block
+        if (animator != null)
+        {
+            animator.SetFloat(SpeedHash, frame.speed);
+            animator.SetBool(IsGroundedHash, !frame.isJumping);
+        }
     }
+
+    // ── rest of your existing methods unchanged ───────────────
 
     void SetGhostTransparency(float alpha)
     {
@@ -104,11 +117,11 @@ public class GhostReplay : MonoBehaviour
             return;
         }
 
+        gameObject.SetActive(true);                         // ← Show ghost when replay starts
         currentFrame = 0;
         isReplaying = true;
         isFinished = false;
 
-        // Snap to frame 0 — pure position, no offset
         transform.position = frames[0].position;
         transform.rotation = frames[0].rotation;
 
@@ -120,8 +133,7 @@ public class GhostReplay : MonoBehaviour
         currentFrame = 0;
         isReplaying = false;
         isFinished = false;
-
+        gameObject.SetActive(false);                        // ← Hide ghost on reset
         Debug.Log("GhostReplay: Reset");
-
     }
 }

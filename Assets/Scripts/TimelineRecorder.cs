@@ -44,19 +44,19 @@ public class TimelineRecorder : MonoBehaviour
 
     void CaptureFrame()
     {
-        bool moving = Input.GetAxis("Horizontal") != 0
-                    || Input.GetAxis("Vertical") != 0;
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+        float speed = new Vector2(h, v).magnitude;   // ← ADD
+        bool moving = speed > 0.1f;
         bool jumping = !playerController.IsGrounded();
 
-        // Record the EXACT transform.position — no offset math
-        // transform.position on a capsule IS the center
-        // Ghost will replay to the same center → no float
         FrameData frame = new FrameData(
-            transform.position,   // ← center, exactly as Unity stores it
+            transform.position,
             transform.rotation,
             moving,
             jumping,
-            false
+            false,
+            speed              // ← ADD
         );
 
         recordedFrames.Add(frame);

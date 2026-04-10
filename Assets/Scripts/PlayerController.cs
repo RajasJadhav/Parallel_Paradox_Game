@@ -14,24 +14,16 @@ public class PlayerController : MonoBehaviour
     private Vector3 moveDirection;
     private int groundContactCount = 0; // tracks active ground contacts
 
-    private Animator animator;
-
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         Debug.Log("PlayerController: Ready.");
-
-        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
         HandleInput();
-
-        float speed = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z).magnitude;
-        animator.SetFloat("Speed", speed);
-        animator.SetBool("IsGrounded", isGrounded);
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {

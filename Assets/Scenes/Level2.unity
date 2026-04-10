@@ -1016,7 +1016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PressurePlate
   requiredActivators: 1
-  linkedDoor: {fileID: 364404648}
+  linkedDoor: {fileID: 0}
   plateRenderer: {fileID: 630023316}
   plateColor: {r: 0.6901961, g: 0.6666667, b: 0.6431373, a: 1}
 --- !u!1001 &668980000
@@ -1165,7 +1165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PressurePlate
   requiredActivators: 1
-  linkedDoor: {fileID: 364404648}
+  linkedDoor: {fileID: 0}
   plateRenderer: {fileID: 690107714}
   plateColor: {r: 0.69411767, g: 0.67058825, b: 0.64705884, a: 1}
 --- !u!23 &690107714 stripped
